@@ -2,9 +2,11 @@
 # see attached CSV file that includes the data 
 # make sure to update the file path
 ## Description
-This project implements a neural network model using TensorFlow and Keras to predict customer churn from a dataset. The model performs binary classification, where the goal is to predict whether a customer will leave (churn) based on their features such as demographics, account information, and services used.
+This project implements a neural network model using TensorFlow and Keras to predict customer churn from a dataset. 
+The model performs binary classification, which aims to predict whether customers will leave (churn) based on their features,
+such as demographics, account information, and services used.
 
-The dataset used is `Churn_Modelling.csv`, which contains customer data including information like tenure, credit score, balance, etc.
+The dataset used is `Churn_Modelling.csv`, which contains customer data including tenure, credit score, balance, etc.
 
 ## Features
 - Neural network built using TensorFlow and Keras
