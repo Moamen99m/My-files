@@ -1,0 +1,35 @@
+##Tic-tac Toe Explanation
+
+## Description
+
+This project implements a **Tic-Tac-Toe** game using Python. It's a simple console-based implementation that allows two players to play the game interactively. The game board is a 3x3 grid, and players alternate turns to place their mark (`X` or `O`) on the board.
+ The game checks for a winner after each move or declares a tie if the board is full and no player has won.
+
+### Features:
+- Interactive Gameplay: The game takes input from players to place their marks on the board.
+- Validation: The game ensures that players make valid moves by checking that the input is within the bounds of the board and that the chosen cell is empty.
+- Game Ending: The game checks if a player has won after each move by checking rows, columns, and diagonals, or if the game ends in a tie.
+- Clear and Simple Output: The board is displayed after every move to show the updated game state.
+
+## Project Structure:
+- draw_board(board): This function draws the current 3x3 board to the console.
+- available_cells(board): Returns a list of available (empty) cells where players can place their marks.
+- player_choice(available_cells): Handles player input and ensures that the chosen cell is valid.
+- game_over(board): Determines if the game has ended, returning:
+  - `1` if Player 1 (X) wins,
+  - `2` if Player 2 (O) wins,
+  - `0` for a tie,
+  - `-1` if the game is still ongoing.
+- check_row(), check_col(), check_diagonal(): Helper functions that check whether any rows, columns, or diagonals contain a winning combination.
+- tic_tac_toe(): 
+The main game loop that manages player turns, drawing the board, and announcing the result.
+
+## How to Play
+
+1. When prompted, input your move in the format `row,column` where `row` and `column` are integers between 0 and 2 (inclusive).
+   - For example, to place your mark in the top-left corner, you would input `0,0`.
+2. The game will alternate between Player 1 (`X`) and Player 2 (`O`), displaying the board after every move.
+3. The game ends when one player wins by having three of their marks in a row, column, or diagonal, or when the board is full and the game is a tie.
+
+
+
