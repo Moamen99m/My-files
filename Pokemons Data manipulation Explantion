@@ -1,0 +1,21 @@
+Pokemons Data Manipulation using pandas
+##please use attached csv and update file path 
+Overview
+This project explores and analyzes the attributes of various Pokémon based on data from a CSV file. The dataset includes information.
+such as whether a Pokémon is legendary, its type, height, weight, and capture rate. 
+Using Python and pandas, various insights are derived, such as finding the heaviest Pokémon, the most common types, 
+and adding a new column that classifies Pokémon based on the difficulty of catching them.
+
+Features
+1. Legendary vs Non-Legendary Count
+The function print_legendary_pokemon(pokemons) counts the number of legendary and non-legendary Pokémon and prints the result.
+2. Five Most Common Primary Types
+The function find_5_most_common_types(pokemons) finds and prints the five most common Pokémon types based on their primary type (type1).
+3. Average Weight
+The function get_average_weight(pokemons, is_legendary) calculates and returns the average weight of either legendary or non-legendary Pokémon based on the input flag is_legendary.
+4. Average Height
+The function get_average_height(pokemons, is_legendary) calculates and returns the average height of either legendary or non-legendary Pokémon based on the input flag is_legendary.
+5. Heaviest Pokémon
+The function get_heaviest_pokemon(pokemons, is_legendary) returns the name of the heaviest Pokémon, either from the legendary or non-legendary group.
+6. Catch Difficulty
+The function add_catch_difficulty(pokemons) classifies Pokémon into three difficulty levels (Easy, Medium, Hard) based on their capture rate and adds this information as a new column called catch_difficulty.
