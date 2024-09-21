@@ -17,3 +17,7 @@ This project analyzes the Northwind database using SQL and EXCEL for data prepro
 ### Technologies Used:
 -SQL and EXCEL for data cleaning and analysis
 - Tableau for data visualization and dashboard creation
+
+## Tic-Tac toe game:
+This project implements a **Tic-Tac-Toe** game using Python. It's a simple console-based implementation that allows two players to play the game interactively. The game board is a 3x3 grid, and players alternate turns to place their mark (`X` or `O`) on the board.
+ The game checks for a winner after each move or declares a tie if the board is full and no player has won.
