@@ -1,0 +1,162 @@
+Hello ALL,
+I built a tuned text summarizer in this file using the Llama model- Facebook Bart.
+To gain access to the code you need to sign up to Huggingface.co/ and request authorization access to Llama models then build your access token in the settings
+The code is written in Google Collab enviroment feel free to change the code to fit the environment you wish to use.
+##Step By Step :
+
+##1. Installing and Importing Required Libraries##
+# Install necessary libraries
+!pip install transformers datasets accelerate evaluate rouge_score
+
+# Import necessary libraries
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, TrainingArguments, Trainer
+from datasets import load_dataset
+import evaluate
+import os
+
+Explanation:
+This installs and imports the required libraries:
+Transformers: For the BART model, tokenizer, and training utilities.
+Datasets: To load the CNN/Daily Mail dataset.
+Evaluate: To compute metrics (e.g., ROUGE for summarization).
+OS: To manage environment variables and paths.
+---------------------------------------
+2. Mounting Google Drive
+from google.colab import drive
+drive.mount('/content/drive')
+
+Explanation:
+Mounts Google Drive to save the fine-tuned model and checkpoints, ensuring work is not lost in case of session disconnection.
+----------------------------------------
+3. Logging into Hugging Face
+from huggingface_hub import login
+login(token="your_token_here")  # Replace with your actual Hugging Face token
+
+Explanation:
+Authenticates with Hugging Face to download the model (Facebook/bart-large-cnn) and access datasets. Replace "your_token_here" with your Hugging Face token.
+---------------------------------------
+4. Loading the Model and Tokenizer
+model_name = "Facebook/bart-large-cnn"
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=True)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name, use_auth_token=True)
+
+Explanation:
+Loads the BART model and its tokenizer.
+facebook/bart-large-cnn is a pre-trained summarization model.
+--------------------------------------
+5. Loading the ROUGE Metric
+rouge = evaluate.load("rouge")
+
+Explanation:
+Loads the ROUGE evaluation metric to measure the summarization quality by comparing the generated and reference summaries.
+--------------------------------------
+6. Defining the Metric Computation Function
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+
+    # Ensure predictions are in the correct format
+    if isinstance(predictions, tuple):
+        predictions = predictions[0]
+
+    # Decode predictions and labels
+    decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+    # Compute ROUGE scores
+    result = rouge.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
+    return result
+
+Explanation:
+This function:
+Decodes model predictions and reference labels from token IDs to human-readable text.
+Computes ROUGE scores to evaluate summarization performance.
+------------------------------------
+7. Loading and Preprocessing the Dataset
+raw_datasets = load_dataset("cnn_dailymail", "3.0.0")
+def preprocess_function(examples):
+    inputs = [article for article in examples["article"]]
+    targets = [highlights for highlights in examples["highlights"]]
+    model_inputs = tokenizer(inputs, max_length=256, truncation=True, padding="max_length")
+    labels = tokenizer(targets, max_length=64, truncation=True, padding="max_length")
+    model_inputs["labels"] = labels["input_ids"]
+    return model_inputs
+
+tokenized_datasets = raw_datasets.map(preprocess_function, batched=True)
+
+Explanation:
+Loads the CNN/Daily Mail dataset, which contains news articles and their summaries.
+Applies tokenization to both articles and highlights using preprocess_function.
+----------------------------------------
+***8. Reducing Dataset Size (Optional)***
+small_train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(500))
+small_val_dataset = tokenized_datasets["validation"].shuffle(seed=42).select(range(100))
+
+Explanation:
+Reduces the dataset size to 500 training and 100 validation examples for faster training and lower memory usage.
+You can increase these numbers for larger-scale training.
+----------------------------------------
+9. Defining Training Arguments
+training_args = TrainingArguments(
+    output_dir="./results",
+    evaluation_strategy="epoch",
+    save_strategy="epoch",
+    per_device_train_batch_size=1,
+    per_device_eval_batch_size=1,
+    gradient_accumulation_steps=4,
+    num_train_epochs=1,
+    weight_decay=0.01,
+    save_total_limit=2,
+    load_best_model_at_end=True
+)
+
+Explanation:
+Defines training settings:
+evaluation_strategy and save_strategy: Save model checkpoints and evaluate after each epoch.
+gradient_accumulation_steps: Simulates a larger batch size by accumulating gradients.
+load_best_model_at_end: Automatically loads the best checkpoint after training.
+--------------------------------------
+10. Initializing the Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=small_train_dataset,
+    eval_dataset=small_val_dataset,
+    tokenizer=tokenizer,
+    compute_metrics=compute_metrics
+)
+
+Explanation:
+Creates a Trainer instance, which handles training, evaluation, and checkpointing.
+--------------------------------------
+11. Training the Model
+trainer.train()
+
+Explanation:
+Starts training the model.
+-------------------------------------
+13. Saving the Model and Tokenizer
+model.save_pretrained("/content/drive/MyDrive/fine-tuned-bart-model")
+tokenizer.save_pretrained("/content/drive/MyDrive/fine-tuned-bart-model")
+
+Explanation:
+Saves the fine-tuned model and tokenizer to Google Drive.
+-------------------------------------
+Here the Process is Finished and the model finished training next step is to use it, you can use gradio using hugging face here are steps to use or you can check for other UI sites if you'd like:
+Push the Model to Hugging Face:
+
+from transformers import AutoModelForSeq2SeqLM
+model.push_to_hub("your-huggingface-repo")
+tokenizer.push_to_hub("your-huggingface-repo")
+Deploy with Gradio:
+
+Build a simple web interface to generate summaries:
+import gradio as gr
+
+def summarize(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+    outputs = model.generate(**inputs)
+    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+gr.Interface(fn=summarize, inputs="text", outputs="text").launch()
+----------------------------------------
+Thank You =;
